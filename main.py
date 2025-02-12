@@ -5,8 +5,11 @@ app = Flask(__name__)
 # Dados de usuário (em um ambiente real, isso viria de um banco de dados)
 data = {
     'user': 'admin',
-    'password': 'admin'
+    'password': 'admin',
+    'cookie': '123456789'
 }
+
+
 
 def set_cookie(response, key, value, max_age=None):
     """Define um cookie na resposta."""
@@ -21,7 +24,7 @@ def get_cookie(request, key):
 def auth():
     if request.method == 'GET':
         # Recupera o cookie 'user' se existir
-        user_cookie = get_cookie(request, '123456789')
+        user_cookie = get_cookie(request, 'cookie')
         if user_cookie:
             return jsonify({'message': f'Usuário autenticado: {user_cookie}'}), 200
         else:
@@ -40,7 +43,7 @@ def auth():
             # Cria uma resposta com uma mensagem de sucesso
             response = make_response(jsonify({'success': 'Logged in'}), 200)
             # Define o cookie 'user' com o nome do usuário
-            response = set_cookie(response, 'user', user, max_age=360)  # Cookie expira em 1 hora
+            response = set_cookie(response, 'cookie', data['cookie'], max_age=100)  # Cookie expira em 1 hora
             return response
         else:
             return jsonify({'error': 'Unauthorized'}), 401
@@ -49,7 +52,7 @@ def auth():
 def logout():
     """Rota para logout (remove o cookie)."""
     response = make_response(jsonify({'success': 'Logged out'}), 200)
-    response.delete_cookie('admin')  # Remove o cookie 'user'
+    response.delete_cookie('cookie')  # Remove o cookie 'user'
     return response
 
 if __name__ == '__main__':
