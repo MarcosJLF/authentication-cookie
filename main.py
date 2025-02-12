@@ -1,14 +1,21 @@
 from flask import Flask, jsonify, request, make_response
+import string
+import secrets
 
 app = Flask(__name__)
+
+def generate_password(length):
+    """Gera uma senha aleatória segura."""
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(secrets.choice(characters) for _ in range(length))
+
 
 # Dados de usuário (em um ambiente real, isso viria de um banco de dados)
 data = {
     'user': 'admin',
     'password': 'admin',
-    'cookie': '123456789'
+    'cookie': 'admin' + generate_password(20)
 }
-
 
 
 def set_cookie(response, key, value, max_age=None):
@@ -26,7 +33,7 @@ def auth():
         # Recupera o cookie 'user' se existir
         user_cookie = get_cookie(request, 'cookie')
         if user_cookie:
-            return jsonify({'message': f'Usuário autenticado: {user_cookie}'}), 200
+            return jsonify({'message': f'Usuário autenticado: Admin','Cookie':data['cookie']}), 200
         else:
             return jsonify({'message': 'Nenhum usuário autenticado'}), 200
 
